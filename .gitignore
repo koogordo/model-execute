@@ -1,0 +1,12 @@
+venv/
+settings.json
+.vscode
+.DS_Store
+**/.DS_Store
+**/__pycache__/**
+**/test.py
+**/*.egg-info
+dist/
+build/
+template
+build
