@@ -1,9 +1,12 @@
+import logging
+import sys
 from typing import List
 from copy import copy
 from dataclasses import dataclass
 from typing import Optional
 from modelexecute.awssession import AwsSession
 import math
+
 
 @dataclass
 class Partition:
@@ -16,9 +19,14 @@ class Partition:
         self.s3_client = AwsSession().get_client('s3')
         self.bucket = bucket
         self.key = key
+        logging.basicConfig()
+        self.logger: logging.Logger = logging.getLogger()
     
     def read(self):
-        return self.s3_client.get_object(Bucket=self.bucket, Key=self.key, Range=f'bytes={self.offset}-{self.length}')
+        
+        sys.stdout.write('>>>>>>>>>>>>>>>> Range='+f'bytes={self.offset}-{self.offset + self.length} <<<<<<<<<<<<<<<<<<<<<')
+        sys.stdout.flush()
+        return self.s3_client.get_object(Bucket=self.bucket, Key=self.key, Range=f'bytes={self.offset}-{self.offset + self.length}')
         
 
 class Partitioner:

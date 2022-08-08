@@ -4,16 +4,16 @@ provider:
   gateway: http://127.0.0.1:8080
 functions:
   driver:
-    lang: python3
+    lang: python3-flask
     handler: ./driver
     image:  koogordo/modelexecute-driver:latest
     environment:
       REDIS_PASSWORD: eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81
-      LOCALHOST: host.minikube.internal
+      LOCALHOST: host.docker.internal
   worker:
-    lang: python3
+    lang: python3-flask
     handler: ./worker
     image:  koogordo/modelexecute-worker:latest
     environment:
       REDIS_PASSWORD: eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81
-      LOCALHOST: host.minikube.internal
+      LOCALHOST: host.docker.internal

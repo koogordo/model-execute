@@ -4,9 +4,9 @@ start-env:
 teardown:
 	docker-compose down
 
-seed:
-	aws --endpoint-url=http://localhost:4566 s3 mb s3://model-execute
-	aws --endpoint-url=http://localhost:4566 s3 cp /Users/gor5760/udpr/model-execute/model_input.json  s3://model-execute/model_input.json
+seed-model-input:
+	awslocal s3 mb s3://model-execute
+	awslocal s3 cp /Users/gor5760/udpr/model-execute/model_input.json  s3://model-execute/model_input.json
 
 clean:
 	rm -rf build
@@ -16,8 +16,8 @@ clean:
 
 build:
 	cp -r modelexecute driver/ && cp -r modelexecute worker/ && faas-cli build --shrinkwrap
-	docker build -f build/driver/Dockerfile build/driver -t koogordo/modelexecute-driver
-	docker build -f build/worker/Dockerfile build/driver -t koogordo/modelexecute-worker
+	docker build -f build/driver/Dockerfile build/driver -t koogordo/modelexecute-driver --no-cache
+	docker build -f build/worker/Dockerfile build/worker -t koogordo/modelexecute-worker --no-cache
 
 push: 
 	docker push koogordo/modelexecute-driver
