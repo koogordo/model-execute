@@ -2,3 +2,7 @@ boto3
 redis
 requests
 Flask==2.2.1
+cloudpickle
+mlflow
+sklearn
+pandas

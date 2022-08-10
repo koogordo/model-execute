@@ -16,8 +16,8 @@ clean:
 
 build:
 	cp -r modelexecute driver/ && cp -r modelexecute worker/ && faas-cli build --shrinkwrap
-	docker build -f build/driver/Dockerfile build/driver -t koogordo/modelexecute-driver --no-cache
-	docker build -f build/worker/Dockerfile build/worker -t koogordo/modelexecute-worker --no-cache
+	docker build -f build/driver/Dockerfile build/driver -t koogordo/modelexecute-driver
+	docker build -f build/worker/Dockerfile build/worker -t koogordo/modelexecute-worker
 
 push: 
 	docker push koogordo/modelexecute-driver
