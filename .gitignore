@@ -10,3 +10,5 @@ dist/
 build/
 template
 build
+partitions/
+data/

@@ -4,14 +4,16 @@ from modelexecute.latch import CountdownLatch
 import json
 import requests
 
+
 def handle(req: dict):
-    
+
     bucket = req['bucket']
     print(bucket)
     key = req['key']
     print(key)
-    partitioner = Partitioner(bucket=bucket, key=key, max_partition_size=10000, poke_increment=400)
-    
+    partitioner = Partitioner(bucket=bucket, key=key,
+                              max_partition_size=30000, poke_increment=400)
+
     partitioner.partition()
     print(partitioner.get_partitions())
     latch = CountdownLatch(len(partitioner.get_partitions()))
@@ -25,7 +27,7 @@ def handle(req: dict):
             'key': key,
             'latch_id': latch.get_latch_id()
         })
-        
+
     return json.dumps({
         'partitions': len(partitioner.get_partitions()),
         'latch_id': latch.get_latch_id()

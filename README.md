@@ -1,6 +1,16 @@
 # model-execute
 Codebase for model exection using fan in pattern
 
+# Overview
+
+
+
+## Driver
+Partition's the data and passes the partitions off to the worker to be handled there.
+
+## Worker
+Executes the Wine Quality model on a specific partition of the input data.
+
 # Dev Env Setup
 
 ## Prereqs
