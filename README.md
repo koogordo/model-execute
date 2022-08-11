@@ -3,13 +3,25 @@ Codebase for model exection using fan in pattern
 
 # Overview
 
+![Overview Diagram](overview_diagram.png)
 
+## Function Entrypoints
+- Driver: modelexecute/driver/handler.py
+- Worker: modelexecute/worker/handler.py
 
-## Driver
-Partition's the data and passes the partitions off to the worker to be handled there.
+Using make, the modelexecute package is copied into each function's docker build context and installed on the image during build.
 
-## Worker
-Executes the Wine Quality model on a specific partition of the input data.
+## modelexecute
+
+Model execute contains the core classes used in the process by both the worker and driver.
+
+  - modelexecute/modelexecute/awssession.py is just a reusable boto3 instance setup to work with localstaack
+  
+  - modelexecute/modelexecute/latch.py contains the CountdownLatch class which is used to interface with redis to set the countdown value and to decrement that value.
+  
+  - modelexecute/modelexecute/partition.py calculates model input partitions which are defined by an offset and a length. It can also be used to read specific partitions from the s3 bucket.
+  
+  - modelexecute/modelexecute/modelmanager.py contains the Model and ModelDef classes which are used to handle the loading of the model, the execution of the predictions, and the writing of the results back to s3.
 
 # Dev Env Setup
 
@@ -59,3 +71,15 @@ Run the following commands:
 
 ### full deploy
 ```make clean build push deploy```
+
+# Calling the driver
+
+- Put input data into a localstack bucket.
+- Invoke the function with the following JSON body.
+  ```json
+  {
+    "bucket":"model-execute", 
+    "key":"model_input.json",
+    "max_partition_size": 30000
+  }
+  ```
