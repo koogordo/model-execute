@@ -1,21 +1,37 @@
 version: 1.0
 provider:
   name: openfaas
-  gateway: http://127.0.0.1:8080
+  gateway: http://localhost:8080
 functions:
-  driver:
+  controlplane:
     lang: python3-flask
-    handler: ./driver
-    image: koogordo/modelexecute-driver:latest
+    handler: ./controlplane
+    image: koogordo/modelexecute-controlplane:latest
     environment:
-      REDIS_PASSWORD: eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81
-      LOCALHOST: host.docker.internal
-  worker:
-    lang: python3-flask
-    handler: ./worker
-    image: koogordo/modelexecute-worker:latest
-    environment:
-      REDIS_PASSWORD: eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81
-      LOCALHOST: host.docker.internal
+      DB_PASSWORD: postgres
+      ENVIRONMENT: local
+      MODEL_NAME: wine-quality
     labels:
-      com.openfaas.scale.min: 3
+      com.openfaas.scale.min: 1
+      com.openfaas.scale.max: 5
+      com.openfaas.scale.zero: true
+      com.openfaas.scale.zero-duration: 15m
+      com.openfaas.scale.type: capacity
+      com.openfaas.scale.target: 50
+      com.openfaas.scale.target-proportion: 0.90
+  executor:
+    lang: python3-flask
+    handler: ./executor
+    image: koogordo/modelexecute-executor:latest
+    environment:
+      DB_PASSWORD: postgres
+      ENVIRONMENT: local
+      MODEL_NAME: wine-quality
+    labels:
+      com.openfaas.scale.zero: true
+      com.openfaas.scale.zero-duration: 15m
+      com.openfaas.scale.min: 1
+      com.openfaas.scale.max: 10
+      com.openfaas.scale.type: capacity
+      com.openfaas.scale.target: 10
+      com.openfaas.scale.target-proportion: 0.90

@@ -1,0 +1,6 @@
+{
+    "name": "wine-quality",
+    "file_name": "python_model.pkl",
+    "artifacts": "s3://model-execute/models/wine-quality/artifacts/",
+    "predict_method": "predict"
+}
