@@ -12,4 +12,5 @@ waitress
 ./modelexecute
 ./controlplane/src
 ./executor/src
+./partitioner/src
 alembic==1.8.1

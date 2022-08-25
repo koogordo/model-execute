@@ -29,6 +29,7 @@ def upgrade() -> None:
         sa.Column('model_name', sa.String(150), sa.ForeignKey(
             'model.name'), nullable=False),
         sa.Column('input', sa.String(500), nullable=False),
+        sa.Column('max_partition_size', sa.BigInteger, nullable=False),
         sa.Column('created_at', sa.DateTime(
             timezone=False), server_default=func.now()),
         sa.Column('status', sa.Enum('STARTED', 'RUNNING', 'FAILED',

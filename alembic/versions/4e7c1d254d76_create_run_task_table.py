@@ -26,11 +26,12 @@ def upgrade() -> None:
                   primary_key=True, default=uuid.uuid4),
         sa.Column('run_id', UUID(as_uuid=True), sa.ForeignKey(
             'run.id'), nullable=False),
-        sa.Column('offset', sa.BigInteger, nullable=False),
-        sa.Column('length', sa.BigInteger, nullable=False),
+        sa.Column('beginning_offset', sa.BigInteger, nullable=True),
+        sa.Column('ending_offset', sa.BigInteger, nullable=True),
         sa.Column('output', sa.String(500), nullable=True),
+        sa.Column('partition_num', sa.Integer, nullable=False),
         sa.Column('status', sa.Enum('SCHEDULED', 'RUNNING', 'FAILED',
-                  'SUCCESS', name='task_status'), nullable=True),
+                  'SUCCESS', 'PARTITIONING', name='task_status'), nullable=True),
         sa.Column('created_at', sa.DateTime(
             timezone=False), server_default=func.now()),
         sa.Column('updated_at', sa.DateTime(

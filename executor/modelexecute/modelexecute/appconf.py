@@ -26,6 +26,7 @@ class LocalConfig(Config):
 class DevConfig(Config):
     def __init__(self) -> None:
         super().__init__()
+        self.APP_PORT: int = 5000
         self.DB_PASSWORD = os.environ['DB_PASSWORD']
         self.DB_HOST = 'host.docker.internal'
         self.AWS_HOST = 'host.docker.internal'

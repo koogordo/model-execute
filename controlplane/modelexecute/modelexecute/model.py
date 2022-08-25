@@ -64,21 +64,14 @@ class __ModelService:
 
     def unregister_model(self, commit=True) -> None:
         self.__assert_session()
-
-        # self.model_meta = self.session.execute(self.session.query(
-        #     Model).where(Model.id == self.model_meta.id)).fetchone()[0]
-
-        # self.session.query(Model).filter(
-        #     Model.id == self.model_meta.id).update({'status': 'OFFLINE'})
         self.model_meta.status = 'OFFLINE'
-
         self.__commit(commit)
 
     def load_model(self) -> None:
         pkl_bucket, pkl_key = split_s3_path(
             self.model_meta.artifacts + self.model_meta.file_name)
-        model_pkl: bytes = s3_client.get_object(
-            Bucket=pkl_bucket, Key=pkl_key)['Body'].read()
+        model_pkl = s3_client.get_object(
+            Bucket=pkl_bucket, Key=pkl_key)['Body']
         if self.model is None:
             logger.info(">>>>>>>>>>> Model is None. Deserializing model.")
             self.model = cloudpickle.load(model_pkl)

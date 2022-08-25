@@ -1,15 +1,13 @@
 from io import BytesIO
-from typing import Dict
-import pandas
+from flask import current_app
 
 from sqlalchemy import update
 
 from flask import jsonify, make_response, Blueprint, request
 
-from modelexecute.latch import CountdownLatch
 from modelexecute.partition import Partition as Partition
-from modelexecute.modelmanager import Model, ModelDef
-from modelexecute.awssession import split_s3_path
+from modelexecute.model import model_service
+from modelexecute.aws import split_s3_path
 from modelexecute.db import get_session
 from modelexecute.models import Run, RunTask
 
@@ -31,23 +29,16 @@ def batch():
         key=key
     )
 
-    partition.offset = run_task.offset
-    partition.length = run_task.length
+    partition.offset = run_task.beginning_offset
+    partition.length = run_task.ending_offset - run_task.beginning_offset
 
     raw_model_input: bytes = partition.read()['Body'].read()
-    output_location = f's3://model-execute/output/winequality/{run_task_id}.json'
-    model: Model = Model(
-        ModelDef(
-            pkl_path='/home/app/function/model_store/python_model.pkl',
-            predict_method='predict',
-            output_location=output_location
-        )
-    )
+    output_location = f's3://model-execute/output/{current_app.config.get("MODEL_NAME")}/{run_task_id}.json'
+    run_task.output = output_location
 
-    model               \
-        .load_model()       \
-        .predict(raw_model_input, lines=True) \
-    .write_prediction()
+    prediction: str = model_service.predict(raw_model_input)
+    model_service.write_prediction(
+        location=output_location, prediction=prediction)
 
     run_task.status = 'SUCCESS'
     session.flush()

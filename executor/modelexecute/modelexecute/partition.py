@@ -43,18 +43,35 @@ class Partitioner:
 
         self.max_partition_size = max_partition_size
 
-        self.num_of_partitions = math.ceil(
+        self.__number_of_partitions = math.ceil(
             self.total_size / self.max_partition_size)
 
         self.estimated_partition_size = math.ceil(
-            self.total_size / self.num_of_partitions)
+            self.total_size / self.__number_of_partitions)
 
         self.poke_increment = poke_increment
 
         self.partitions: List[Partition] = []
 
+    def get_ending_offset(self, partition_num: int):
+        newline_not_found = True
+        ending_offset: int = copy(
+            self.estimated_partition_size) * partition_num
+        if ending_offset >= self.total_size or (ending_offset >= self.total_size + self.poke_increment):
+            ending_offset = self.total_size
+        else:
+            while newline_not_found:
+                poke_chunk = self.s3_client.get_object(
+                    Bucket=self.bucket, Key=self.key, Range=f'bytes={ending_offset}-{ending_offset + self.poke_increment}')
+                for b in poke_chunk['Body'].read():
+                    if b == b'\n'[0]:
+                        newline_not_found = False
+                        break
+                    ending_offset = ending_offset + 1
+        return ending_offset
+
     def partition(self):
-        for i in range(self.num_of_partitions):
+        for i in range(self.__number_of_partitions):
             partition: Partition = Partition(bucket=self.bucket, key=self.key)
             if i == 0:
                 partition.offset = 0
@@ -79,5 +96,5 @@ class Partitioner:
             if (partition.length > 0):
                 self.partitions.append(partition)
 
-    def get_partitions(self):
-        return self.partitions
+    def number_of_partitions(self):
+        return self.__number_of_partitions

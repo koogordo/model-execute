@@ -35,3 +35,19 @@ functions:
       com.openfaas.scale.type: capacity
       com.openfaas.scale.target: 10
       com.openfaas.scale.target-proportion: 0.90
+  partitioner:
+    lang: python3-flask
+    handler: ./partitioner
+    image: koogordo/modelexecute-partitioner:latest
+    environment:
+      DB_PASSWORD: postgres
+      ENVIRONMENT: local
+      MODEL_NAME: wine-quality
+    labels:
+      com.openfaas.scale.zero: true
+      com.openfaas.scale.zero-duration: 15m
+      com.openfaas.scale.min: 1
+      com.openfaas.scale.max: 10
+      com.openfaas.scale.type: capacity
+      com.openfaas.scale.target: 10
+      com.openfaas.scale.target-proportion: 0.90

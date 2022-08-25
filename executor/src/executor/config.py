@@ -2,7 +2,9 @@ from modelexecute.appconf import LocalConfig, DevConfig
 
 
 class LocalExecutorConfig(LocalConfig):
-    pass
+    def __init__(self) -> None:
+        super().__init__()
+        self.APP_PORT = 5001
 
 
 class DevExecutorConfig(DevConfig):
